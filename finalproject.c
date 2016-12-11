@@ -1,41 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX_CHAR_LENGTH 256
-#define MAX_NUM_ACTORS 10
-#define NUM_MOVIES 10
-struct Date{
-  int day;
-  int month;
-  int year;
-};
-struct Actor{
-  char name[MAX_CHAR_LENGTH];
-  struct Date birthdateActor;
-  char nationality[MAX_CHAR_LENGTH];
-};
-struct Movie{
-  char title[MAX_CHAR_LENGTH];
-  char genre[MAX_CHAR_LENGTH];
-  char director[MAX_CHAR_LENGTH];
-  int year;
-  struct Actor list_of_actors[MAX_NUM_ACTORS];
-  char description[MAX_CHAR_LENGTH];
-  float price;
-};
-struct Client{
-  int id;
-  char name[MAX_CHAR_LENGTH];
-  struct Date birthdateClient;
-};
 
-void MainMenu();
-void WatchOnline();
-void ShowOnline();
-void RentDvd();
-void ShowRentals();
-void ShowAvailability();
-void ShowRentedByClients();
+#include "functionslibrary.h"
 
 int main(int argc, char const *argv[]) {
 //printf("Hello world %s!\n", argv[1] );
@@ -49,7 +16,7 @@ int main(int argc, char const *argv[]) {
 
   //printf("my movie.title: %s\n",mymovie.title);
 
-  fp = fopen("input.txt", "r");
+  fp = fopen("movies.txt", "r");
   if (fp == NULL)
       exit(EXIT_FAILURE);
 
@@ -173,7 +140,7 @@ int main(int argc, char const *argv[]) {
                                               mymovie.list_of_actors[i].nationality);
       }
 
-
+      // mymovie.description[semicolonPosition[5]]='\0';
       for (int i = semicolonPosition[4]+1; i < semicolonPosition[5]; i++) {
         mymovie.description[i-(semicolonPosition[4]+1)]=line[i];
       }
@@ -186,93 +153,93 @@ int main(int argc, char const *argv[]) {
       mymovie.price=atof(price);
       printf("%.2f €\n", mymovie.price);
 
+      // struct Movie list_of_movies[NUM_MOVIES];
+      // for (int i = 1; i <= NUM_MOVIES; i++) {
+      //   list_of_movies[i]=mymovie;
+      // }
 
   }
+  // Lectura de clientes
+  struct Client myclient;
+
+  fp = fopen("clients.txt", "r");
+  if (fp == NULL)
+      exit(EXIT_FAILURE);
+
+  while ((read = getline(&line, &len, fp)) != -1) {
+      // printf("Retrieved line of length %zu :\n", read);
+      // printf("%s", line);
+      int plusPosition[2];
+      int plusPositionIterator=0;
+       for (int m = 0; m <read; m++) {
+         if (line[m]=='+') {
+           plusPosition[plusPositionIterator]=m;
+           plusPositionIterator ++;
+         }
+       }
+
+       char clientName[MAX_CHAR_LENGTH]={'\0'};
+       for (int l = 0; l < plusPosition[0]; l++) {
+         clientName[l]=line[l];
+       }
+       strcpy(myclient.name,clientName);
+
+       char birthdateString[MAX_CHAR_LENGTH];
+       for (int l = plusPosition[0]+1; l < plusPosition[1]; l++) {
+         birthdateString[l-(plusPosition[0]+1)]=line[l];
+       }
+
+       int slashPosition[2];
+       int slashPositionIterator=0;
+       for (int m = 0; m < strlen(birthdateString); m++) {//aqui hay m pq quiero
+         if (birthdateString[m]=='/') {
+           slashPosition[slashPositionIterator]=m;
+           slashPositionIterator ++;
+         }
+       }
+
+       //convertir el dia (string-structure)
+       char day[2]={'\0'};
+       for (int m = 0; m < slashPosition[0]; m++) {
+         day[m]=birthdateString[m];
+       }
+       myclient.birthdateClient.day=atoi(day);
+
+       //convertir el mes (string-structure)
+       char month[2]={'\0'};
+       for (int m = slashPosition[0]+1; m < slashPosition[1]; m++) {
+         month[m-(slashPosition[0]+1)]=birthdateString[m];
+       }
+       myclient.birthdateClient.month=atoi(month);
+
+       //convertir el año (string-structure)
+       char year[4]={'\0'};
+       for (int m = slashPosition[1]+1; m < strlen(birthdateString); m++) {
+         year[m-(slashPosition[1]+1)]=birthdateString[m];
+       }
+       myclient.birthdateClient.year=atoi(year);
+
+       char clientId [MAX_CHAR_LENGTH]={'\0'};
+       for (int l = plusPosition[1]+1; l < read; l++) {
+         clientId[l-(plusPosition[1]+1)]=line[l];
+       }
+       strcpy(myclient.id,clientId);
+       printf("Client: %s %d/%d/%d %s\n", myclient.name,
+                                          myclient.birthdateClient.day,
+                                          myclient.birthdateClient.month,
+                                          myclient.birthdateClient.year,
+                                          myclient.id);
+    }
 
   fclose(fp);
   if (line)
       free(line);
 
-  // int answer;
-  // do{
-  // printf("Main menu\n 1 – Watch an online movie\n 2 – Show online rentals\n 3 – Rent a DVD movie\n 4 – Show DVD rentals\n 5 – Show DVD availability\n 6 – Show online movies rented by a client\n7 – Exit");
-  // printf("Please, select an option (1-7):"); //ToDo : rellenar con todo el menú
-  //   scanf("%d",&answer );
-  //   printf("You have chosen %d\n",answer);
-  //   switch (answer) {
-  //     case 1:
-  //       WatchOnline();
-  //       break;
-  //     case 2:
-  //       ShowOnline();
-  //       break;
-  //     case 3:
-  //       RentDvd();
-  //       break;
-  //     case 4:
-  //       ShowRentals();
-  //       break;
-  //     case 5:
-  //       ShowAvailability();
-  //       break;
-  //     case 6:
-  //       ShowRentedByClients();
-  //       break;
-  //     case 7:
-  //       break;
-  //     default:
-  //       printf("Opcion no valida");//ToDo traducir
-  //   }
-  // }while(answer!=7); // igual que : == | distinto de : !=
-  //
-
-
-
+  MainMenu();
 
   return 0;
 }
 
-void WatchOnline(){
-  // char anyKey;
-  char expirationDate[MAX_CHAR_LENGTH];
-  int cardNumber;
-  char userName[MAX_CHAR_LENGTH];
-  char continueAnswer;
-  char title[MAX_CHAR_LENGTH];
-  printf("Introduce the title of the movie\n");
-  scanf(" %99[^\n]",title); // el 99 es para evitar problemas con el scanf y los espacios dentro de un bucle
-  printf("The total price for %s movie is:", title); //ToDo precio
-  printf("Do you want to continue (Y/N)\n");
-  scanf(" %c",&continueAnswer);
-  if (continueAnswer=='Y'||continueAnswer=='y') {
-    printf("Introduce complete name\n");
-    scanf(" %99[^\n]",userName);
-    printf("Introduce your card number\n");
-    scanf(" %d",&cardNumber);
-    printf("Introduce the expiration date\n");
-    scanf(" %s",expirationDate);
-    printf("Great! The payment was successful. Now you are able to watch %s movie for 24h. Enjoy!\n",title);
-    printf("Thank you for using our www.moviesclubagency.net :)\n");
-    printf("Press any key to return to the main menu ......\n");
-    // scanf(" %c",&anyKey);
-    getc(stdin);// ToDo como hacer que vuelva presionando cualquier tecla
-  }
-}
-void ShowOnline(){
-
-}
-void RentDvd(){
-
-}
-void ShowRentals(){
-
-}
-void ShowAvailability(){
-
-}
-void ShowRentedByClients(){
-
-}
 // for (size_t i = 0; i < count; i++) {
 //   /* code */
 // }

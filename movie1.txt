@@ -1,0 +1,5 @@
+Pedro Lopez   5/10/2016   7.50 euros 
+Luisa Rodriguez   9/10/2016   2.50 euros 
+Maria Jimenez   12/10/2016   5.00 euros 
+Juan Retama   22/10/2016   12.50 euros 
+Daniel Clavo   29/10/2016   7.50 euros 
